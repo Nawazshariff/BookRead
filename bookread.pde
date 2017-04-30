@@ -1,9 +1,12 @@
+import de.bezier.data.sql.*;
+import de.bezier.data.sql.mapper.*;
+
  import processing.core.*; 
  import processing.xml.*; 
 
 import neurosky.*; 
 import org.json.*; 
-
+import java.sql.*;
 import java.applet.*; 			                                           //applet—to_control_the_sketch
 import java.awt.Dimension;                                          //encapsulates the width & height of a component in a single obj
 import java.awt.Frame;                                                                                  //creates frames
@@ -28,18 +31,18 @@ ThinkGearSocket neuroSocket;		//transmission and receipt of think Gear brainwave
 BufferedReader reader_0,reader_1;
 String mlines[],tough="The tough words:",words[],pagewords,print_sig="Checking status : ",waiting="connecting ...",conn_succ="connection successfull";
 int x_word=930,y_word;
-ResourceBundle rb;
+ResourceBundle rb,rb1;
 int attention = 50;
 int blinkSt = 0;
-int blink = 0;
+int blink = 0,blink1=0;
 int meditation=20;
 int eeg=0;
 int deltaa  =0;
 int thetaa=0;
 int pages=0,line_extra;
-int k=0;
+int k=1;
 int t=0;
-static int blink_count=0,fblink_timer=0;
+static int blink_count=0,fblink_timer=0,word_timer=0;
 PFont font,p;
 PImage bg;
 PGraphics l,r,nav;
@@ -50,7 +53,8 @@ int sig1;
 int a=900,b=50;
 String hash;
 int flag=0;
-
+ String database = "dictionarystudytool";
+ MySQL msql;
 /*------------------------------------*/
 public void setup() 
 {
@@ -72,7 +76,7 @@ public void setup()
 
            
              rb=ResourceBundle.getBundle("words");
-             
+             rb1=ResourceBundle.getBundle("meaning");
               p=createFont("couries bold",20);
                           
              //setting font
@@ -134,8 +138,43 @@ public void meaning_area(){
               stroke(#009999);
               strokeWeight(3);
               rect(900, 290, 380, 430);
+              msql = new MySQL( this, "localhost", database, "root", "" );
+     pagewords=rb.getString(""+page);
+    words=split(pagewords,' ');
+    try{
+      
+    String fetch=words[k-1];
+    if ( msql.connect() )
+    {
+        msql.query( "SELECT e.definition from entries as e where e.word='%s'",fetch);
+       if( msql.next()){
+        println( "this table has " + msql.getString(1) + " number of rows" );
+        hash=msql.getString(1);
+              fill(#000000);
+              text(hash,900,290, 380, 430);
+       }
+              
+    }
+    else
+    {
+        // connection failed !
+        println("not able to connect");
+        
+    }
+            
+    }
+    catch(ArrayIndexOutOfBoundsException e){
+         hash="not available";
+              fill(#000000);
+              text(hash,900,290, 380, 430);
+    }
+  flag=0;
+   msql.close();
 
+
+                        
 }
+
 
 public void tough_area(){
               //border
@@ -233,30 +272,23 @@ public void draw() {
   leftside();         
   leftnav();
   pageno(); 
+  
   tough_area();
-  meaning_area();
+  
   para();
+  meaning_area();
+  
+  
   signal_area();
+  if(! (flag==1)&& !(millis()<=(word_timer+4000)) ) 
   tough_cursor();
   //show_meaning();
-  if( (blink_count!=0)&& (millis()>=(fblink_timer+800)) ) blink_call();
+  if( (blink_count!=0)&& (millis()>=(fblink_timer+1100)) ) blink_call();
   delay(50);
   
 }
 
 
-public void show_meaning()
-{
- if(flag==1){
-    hash=""+page+k;
-    text(hash,900,290, 380, 430);
-  noLoop();
-
- }
-   delay(100);
-   loop();
-
-}
 
 public void tough_cursor()
 {
@@ -264,11 +296,11 @@ public void tough_cursor()
    stroke(#000000);
    strokeWeight(4);
    rect(a,b,380, 40);
-    if(attention >= 50)
+    if(blink1 >=50 && blink1<=70)
                  {
                    t=50;
               //   println("  Attention:" +attention);
-                    attention=0;
+                    blink1=0;
                   }
                  
                  if(t==50){
@@ -283,18 +315,18 @@ public void tough_cursor()
                              a=900;  
                            }
                            
-                            if(k<7)
+                            if(k<6)
                                {
                                   k =k+1;
                                 }
                               else
-                                {    k=0;}
+                                {    k=1;}
                    t=0;
                    
                  }               
                  t++;
 
-
+  //flag=0;
 
 
 }
@@ -338,9 +370,8 @@ public void blink_call(){
                             keyPressed();
                             break;
                             
-                   case 2:  flag=1;
-                           show_meaning();
-                             
+                   case 2:  flag=1;                         
+                             word_timer=millis();
                              break;
                             
                     case 3: key = 'p';
@@ -357,13 +388,14 @@ public void blinkEvent(int blinkStrength)
 {
   
   println(blinkStrength);
-  blink=blinkSt = blinkStrength;
+  blink1=blink=blinkSt = blinkStrength;
   blinkSt-=10;
   
   println("after removing additional signals "+ blinkSt);
   if(blinkSt>60){
                 if(blink_count==0) fblink_timer=millis();
                 blink_count++;
+                
   }
   
 }
