@@ -27,7 +27,7 @@ public class  bookread extends PApplet {
 
 ThinkGearSocket neuroSocket;		//transmission and receipt of think Gear brainwave data   between a     client and a server.
 BufferedReader reader_0,reader_1;
-String mlines[],tough="The tough words:",words[],pagewords,print_sig="Checking status : ",waiting="connecting ...",conn_succ="connection successfull",hash,database = "dictionarystudytool";
+String mlines[],tough="The tough words:",words[],pagewords,print_sig="Status : ",waiting="connecting ...",conn_succ="connection successfull",hash,database = "dictionarystudytool";
 ResourceBundle rb;
 int attention = 50,blinkSt = 0,blink = 0,blink1=0,meditation=20,eeg=0,deltaa=0,thetaa=0,pages=0,line_extra,k=1,t=0,i=30,j=110,page=1,sig1,a=900,b=50,flag=0,x_word=930,y_word;
 static int blink_count=0,fblink_timer=0,word_timer=0,count=0;
@@ -79,37 +79,50 @@ public void signal_area()       //bottom left part of UI  where connection value
   fill(#ffffff);
   stroke(#000000);
   strokeWeight(2);
-  rect(0,290,900,430);
+  rect(0,450,900,270);
   fill(#000000);
-  text(print_sig,20,350);
+  text(print_sig,700,475);
   if(sig1!=0)		//checks for headset connection
   {
     fill(#cc0000);    //red color
-    text(waiting,300,350);
+    text(waiting,700,500);
   }
   else
   {
     fill(#009900);    
-    text(conn_succ,300,350);
+    text(conn_succ,700,500);
   }
     //prints values of attention, meditation and blinkstrength
 	
    fill(#000000);
-   text("Attention : ",20,390);
+   text("Attention : ",700,525);
    if(attention>80) fill(#009900); else   fill(#CC0000);   
-   text(""+attention,300,390);
+   text(""+attention,850,525);
+   fill(#000000);
+   text("Attention : ",20,475);
+   strokeWeight(20);  // Beastly
+   line(20, 500, 20+(attention*3), 500);
     
    fill(#000000);  
-   text("Meditation : ",20,430);   
+   text("Meditation : ",700,550);   
    if(meditation>80) fill(#009900); else   fill(#CC0000);   
-   text(""+meditation,300,430);
-    
+   text(""+meditation,850,550);
+   fill(#000000);  
+   text("Meditation : ",20,550); 
+   strokeWeight(20);  // Beastly
+   line(20, 575, 20+(meditation*3), 575);
+   
    fill(#000000);   
-   text("BlinkStrength: ",20,470);
+   text("BlinkStrength: ",700,575);
    if(blink>80) fill(#009900); else   fill(#CC0000);   
-   text(""+blink,300,470);
-   fill(#000000);   
+   text(""+blink,850,575);
+   fill(#000000);  
+   text("Blink Strength : ",20,625); 
+   strokeWeight(20);  // Beastly
+   line(20, 650, 20+(blink*3), 650);
 
+  fill(#000000);   
+   
 }
 
 public void meaning_area()   //right bottom part of UI where meaning of the words are displayed
@@ -137,6 +150,12 @@ public void meaning_area()   //right bottom part of UI where meaning of the word
             fill(#003319);
             text(hash,905,290, 375, 430);
          }
+         else
+         {
+           hash="Not available";
+          fill(#000000);
+          text(hash,900,290, 380, 430);
+         }
               
       }
       else
@@ -149,7 +168,7 @@ public void meaning_area()   //right bottom part of UI where meaning of the word
     }
     catch(ArrayIndexOutOfBoundsException e)
     {
-      hash="not available";
+      hash="EMPTY FIELD";
       fill(#000000);
       text(hash,900,290, 380, 430);
     }
@@ -171,6 +190,8 @@ public void tough_area(){	//right top part of UI where the possible tough words 
               rect(900, 0, 380, 50);
               strokeWeight(1);
               //header name
+              fill(#cc0000);
+              text("[Blink Twice to select]",1080, 35);
               fill(#000000);
               text(tough, 920, 15, 480, 30);
               //tough words- max 6
@@ -193,7 +214,7 @@ public void leftside(){
               fill(#cce5ff);
               stroke(#000000);
               strokeWeight(4);
-              rect(0, 50, 900, 1230);
+              rect(0, 50, 900, 400);
 }
 public void leftnav(){
               //for navigation area
@@ -203,14 +224,19 @@ public void leftnav(){
               rect(0, 0, 900, 50);
               strokeWeight(1);
               //navigational arrows
+              fill(#ffffff);
+              text("[Blink Thrice]", 70, 30);
               fill(#00004c);
               stroke(#004C99);
               strokeWeight(2);
-              triangle(25,25,50,10,50,40);	//for left navigation 
+              triangle(20,25,60,10,60,40);	//for left navigation 
+              
+              fill(#ffffff);
+              text("[Blink Once]",708, 30);
               fill(#00004c);
               stroke(#004C99);
               strokeWeight(2);
-              triangle(860,25,835,10,835,40);	//for right navigation
+              triangle(865,25,825,10,825,40);	//for right navigation
 }
 
 public void para()		//left top part of the UI to display the text 
@@ -244,22 +270,25 @@ public void para()		//left top part of the UI to display the text
 
 public void pageno(){	//to display page number
  fill(0);
- textSize(18);
+ textSize(26);
  text("Page no: ",380,34);
  fill(#ffffff);
- text(page,460,34);
+ text(page,485,34);
  fill(0);
  textSize(20);
 }
 
-public void draw_blink_image(){
+/*public void draw_blink_image(){
 
     img=loadImage("blink10.png");
     imageMode(CORNER);
-    image(img, 500, 500, 380, 200);
+    image(img, 700, 610, 190, 107);
 
 
 }
+
+*/
+
 
 /*------------------------------------*/
 public void draw() {
@@ -283,7 +312,7 @@ public void draw() {
  
   if( (blink_count!=0)&& (millis()>=(fblink_timer+1100)) ) blink_call();	//to know whether user has blinked twice or thrice
   delay(50);
-  draw_blink_image();
+  //draw_blink_image();
   
   
 }
@@ -334,10 +363,11 @@ public void arrowclicked(int pos,int dir)	//function to highlight particular arr
 {
               fill(#FF3333);
               if(dir==0)	//left navigaiton
-                triangle(pos,25, pos+25,10,pos+25,40);
+                triangle(20,25,60,10,60,40);
               else		//right navigation
-                triangle(pos+25,25, pos,10,pos,40);
+                triangle(865,25,825,10,825,40);
               delay(200);
+                         
 }
 
 void keyPressed()	//navigation function
@@ -362,11 +392,29 @@ void keyPressed()	//navigation function
       loop();
     }
     
-  
+     
 }
 
 public void blink_call(){	//function which tells what to do when single,double and triple blinks occur 
-  switch(blink_count)
+/*
+                fill(#ffffff);
+                stroke(#003366);
+                strokeWeight(4);
+                rect(700, 610, 190, 107);
+                for(int i=blink_count;i>=1;i--){
+                for(int eye=10;eye>=1;eye--)
+                {    
+                  img=loadImage("blink"+eye+".png");
+                  imageMode(CORNER);
+                  image(img, 700, 610, 190, 107);
+                  delay(10);
+                }
+                  delay(50);
+                }
+                strokeWeight(1);
+                noStroke(); 
+                */
+              switch(blink_count)
                   {
 			//single blink for right navigation
                     case 1: key = 'n';
@@ -393,22 +441,10 @@ public void blinkEvent(int blinkStrength) 	//function to capture blinks
   blink1=blink=blinkSt = blinkStrength;
   blinkSt-=10;	//removing additional signals
   println("after removing additional signals "+ blinkSt);
-  if(blinkSt>60){	//if the strength is above 60 after removing additional signals then it is a force blink
+  if(blinkSt>70){	//if the strength is above 60 after removing additional signals then it is a force blink
                 if(blink_count==0) fblink_timer=millis();
                 blink_count++;	//increment blink counter
-                fill(#ffffff);
-                stroke(#003366);
-                strokeWeight(4);
-                rect(498, 498, 383, 203);
-                for(int eye=10;eye>=1;eye--)
-                {    
-                  img=loadImage("blink"+eye+".png");
-                  imageMode(CORNER);
-                  image(img, 500, 500, 380, 200);
-                  delay(10);
-                }
-                strokeWeight(1);
-                noStroke();                
+                              
               
   }
   
